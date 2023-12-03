@@ -1,11 +1,17 @@
-let counter = 10;
+let curentTime;
 
-function timer(){
-    if(counter == -1){
-        process.exit(1);
-    }
-    console.log(counter)
-    counter -=1;    
+function callBackFunction() {
+    let delayedTime = Date.now() - curentTime;
+    let delayedTimeInSeconds = (delayedTime - 1000)/1000;
+
+    
+    //to log the delay
+    console.log(`Time Delay: ${delayedTime/1000} seconds`);
+    
+    //to log the exact time delay in sec
+    console.log(`Time Delay: ${delayedTimeInSeconds} seconds`);    
 }
 
-setInterval(timer, 1000);
+curentTime = Date.now();
+
+setTimeout(callBackFunction, 1000);
