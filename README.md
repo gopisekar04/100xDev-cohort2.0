@@ -30,8 +30,8 @@ To get started with the solutions:
 
 1. Clone the repository to your local machine:
 
-   ```bash
-   git clone https://github.com/your-username/100xDev-Cohort-2.0-Solutions.git
+   ```bash   
+   git clone https://github.com/your-username/100xDev-cohort2.0.git
    ```
 
 2. Explore the solutions and choose the challenges you'd like to work on.
