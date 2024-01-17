@@ -1,21 +1,18 @@
 const { Router } = require("express");
-const adminMiddleware = require("../middleware/admin");
 const router = Router();
+const adminMiddleware = require("../middleware/admin");
 const {Admin, Course} =  require("../db");
 const JWT_SECRET = require("../config");
 const jwt = require("jsonwebtoken");
-const z = require("zod")
+const {usernameSchema, passwordSchema, courseSchema} = require('./type');
+
 
 // Admin Routes
-
-const usernameSchema = z.string().email();
-const passwordSchema = z.string().min(6);
-
 router.post('/signup', async(req, res) => {
-    const {username, password} = req.body;
+    const {username, password} = req.body;    
 
     const usernameResponse = usernameSchema.safeParse(username);
-    const passwordResponse = passwordSchema.safeParse(password);
+    const passwordResponse = passwordSchema.safeParse(password);    
 
     if(usernameResponse.success){
         if(passwordResponse.success){
@@ -23,7 +20,6 @@ router.post('/signup', async(req, res) => {
             username,
             password
         })
-    
         res.json({
             message: "Admin created successfully"
         })
@@ -35,7 +31,7 @@ router.post('/signup', async(req, res) => {
     }
     else{
         res.json({
-            message: "invalid email"
+            message: "invalid email/ username"
         })
     }     
 });
@@ -53,7 +49,7 @@ router.post('/signin', async(req, res) => {
             username
         }, JWT_SECRET);
 
-        req.json({
+        res.json({
             token
         })
     }else{
@@ -65,11 +61,38 @@ router.post('/signin', async(req, res) => {
 });
 
 router.post('/courses', adminMiddleware, (req, res) => {
-    
+    const response = courseSchema.safeParse(req.body);
+    const {title, description, price, imageLink} = req.body;
+
+    if(response.success){
+         Course.create({
+            title,
+            description,
+            price,
+            imageLink            
+        }).then((course) => {
+            res.status(201).json({
+                message: "Course created successfully",
+                course_id: course._id
+            })
+        })
+    }
 });
 
-router.get('/courses', adminMiddleware, (req, res) => {
+router.get('/courses', adminMiddleware, async(req, res) => {
     // Implement fetching all courses logic
+    try{
+        const courses = await Course.find({})
+        res.json({
+            courses
+        })
+    }catch(e){
+        res.json({
+            message: "Couldn't fetch courses"
+        })
+    }
+
+
 });
 
 module.exports = router;
